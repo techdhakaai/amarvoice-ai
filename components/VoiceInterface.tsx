@@ -109,6 +109,14 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onClose, config }) => {
     transcriptionsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [transcriptions, status]);
 
+  useEffect(() => {
+    return () => {
+      // Ensure all audio contexts are closed when the component unmounts
+      audioContextRef.current?.input.close().catch(() => {});
+      audioContextRef.current?.output.close().catch(() => {});
+    };
+  }, []);
+
   const drawWaveform = useCallback(() => {
     if (!canvasRef.current || !analyserRef.current || status !== 'Speaking') return;
     const canvas = canvasRef.current;
@@ -452,9 +460,10 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onClose, config }) => {
                 const sourceNode = inputCtx.createBufferSource();
                 sourceNode.buffer = inputCtx.createBuffer(1, e.inputBuffer.length, inputCtx.sampleRate);
                 sourceNode.buffer.getChannelData(0).set(e.inputBuffer.getChannelData(0));
-                // Ensure audioStreamDestinationRef.current is not null before connecting
                 if (audioStreamDestinationRef.current) {
                   sourceNode.connect(audioStreamDestinationRef.current);
+                } else {
+                  console.warn("audioStreamDestinationRef.current is null during onaudioprocess. Audio not routed to recorder.");
                 }
                 sourceNode.start();
               }
@@ -538,9 +547,10 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onClose, config }) => {
                 source.buffer = audioBuffer;
                 source.playbackRate.value = 1.0; // Client-side playback rate set to default, controlled by API speakingRate
                 source.connect(analyser).connect(outputCtx.destination);
-                // Ensure audioStreamDestinationRef.current is not null before connecting
                 if (audioStreamDestinationRef.current) {
                   source.connect(audioStreamDestinationRef.current); // Also route AI audio to recorder
+                } else {
+                  console.warn("audioStreamDestinationRef.current is null during AI audio playback. Audio not routed to recorder.");
                 }
 
                 source.addEventListener('ended', () => {

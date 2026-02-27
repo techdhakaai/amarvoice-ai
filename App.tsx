@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AppView, AnalyticsData, BusinessConfig, SentimentPoint } from './types';
+import React, { useState } from 'react';
+import { AppView, BusinessConfig, SentimentPoint } from './types';
 import VoiceInterface from './components/VoiceInterface';
 
 const SENTIMENT_DATA: SentimentPoint[] = [
@@ -38,7 +38,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50 font-['Hind_Siliguri']">
+    <div className="min-h-screen flex bg-slate-50 font-sans">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transform transition-transform duration-300 lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-10">

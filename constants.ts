@@ -1,7 +1,7 @@
 
 import { BusinessConfig } from './types';
 
-export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
+export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-09-2025';
 
 export const getAccentAdjustedInstruction = (accent: string, config: BusinessConfig, isPersonalized: boolean = false, autoAccentDetectionEnabled: boolean = false) => {
   const baseInstruction = `
@@ -77,5 +77,11 @@ Characteristics for Accent Detection:
 `;
   }
 
-  return `${baseInstruction}\n\nDIALECT REQUIREMENT: ${accentGuideline}${personaGuideline}\n\n${accentDetectionGuideline}`;
+  let finalInstruction = `${baseInstruction}\n\nDIALECT REQUIREMENT: ${accentGuideline}${personaGuideline}`;
+
+  if (autoAccentDetectionEnabled) {
+    finalInstruction += `\n\n${accentDetectionGuideline}`;
+  }
+
+  return finalInstruction;
 };
